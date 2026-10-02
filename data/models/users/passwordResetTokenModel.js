@@ -15,7 +15,8 @@ PasswordResetTokens.init(
 
     user_id: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      unique: true
     },
 
     token: {
@@ -40,10 +41,10 @@ PasswordResetTokens.init(
 
 /**
  * Associations
- * One user can have many password reset tokens (over time),
- * but every token belongs to exactly one user.
+ * One user can have only one active password reset token,
+ * and every token belongs to exactly one user.
  */
-Users.hasMany(PasswordResetTokens, {
+Users.hasOne(PasswordResetTokens, {
   foreignKey: 'user_id',
   onDelete: 'CASCADE'
 });

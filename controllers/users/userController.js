@@ -816,21 +816,14 @@ module.exports.forgotPassword = async (req, res) => {
       });
     }
 
-    // Remove any previous, unused reset tokens for this user so only the
-    // latest link is valid
-    await PasswordResetTokenManager.deletePasswordResetToken({
-      where: {
-        user_id: userProfile.id
-      }
-    });
-
     const resetToken = crypto.randomBytes(32).toString('hex');
 
     const resetExpiresAt = new Date(
       Date.now() + 60 * 60 * 1000
     );
 
-    await PasswordResetTokenManager.createPasswordResetToken({
+    // Replace the user's existing token (if any) so only the latest link is valid
+    await PasswordResetTokenManager.upsertPasswordResetToken({
       user_id: userProfile.id,
       token: resetToken,
       expires_at: resetExpiresAt
