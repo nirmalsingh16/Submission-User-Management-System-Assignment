@@ -17,6 +17,33 @@ module.exports.createEmailVerificationToken = (payload, options = {}) => {
 
 
 /**
+ * Create or replace the email verification token of a user
+ * (a user can have only one token, so an existing one is overwritten)
+ */
+module.exports.upsertEmailVerificationToken = (payload, options = {}) => {
+  return new Promise((resolve, reject) => {
+    EmailVerificationTokens.findOne({ where: { user_id: payload.user_id }, ...options })
+      .then((existingToken) => {
+        if (existingToken) {
+          return existingToken.update(
+            { token: payload.token, expires_at: payload.expires_at },
+            options
+          );
+        }
+
+        return EmailVerificationTokens.create(payload, options);
+      })
+      .then((result) => {
+        resolve(JSON.parse(JSON.stringify(result)));
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+};
+
+
+/**
  * Get single email verification token
  */
 module.exports.getEmailVerificationToken = (searchQuery) => {

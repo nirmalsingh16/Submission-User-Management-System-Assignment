@@ -23,7 +23,7 @@ Users.init(
     },
 
     email: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING(100),
       allowNull: false,
       unique: true,
       validate: {
@@ -47,7 +47,7 @@ Users.init(
     },
 
     profile_image_public_id: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING(200),
       allowNull: true
     },
 

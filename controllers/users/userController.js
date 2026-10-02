@@ -242,21 +242,14 @@ module.exports.resendVerificationEmail = async (req, res) => {
       });
     }
 
-    // Remove any previous, unused verification tokens for this user so
-    // only the latest link is valid
-    await EmailVerificationTokenManager.deleteEmailVerificationToken({
-      where: {
-        user_id: userProfile.id
-      }
-    });
-
     // Generate new verification token
     const verificationToken = crypto.randomBytes(32).toString('hex');
 
     // Token will expire after 24 hours
     const verificationExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-    await EmailVerificationTokenManager.createEmailVerificationToken({
+    // Replace the user's existing token (if any) so only the latest link is valid
+    await EmailVerificationTokenManager.upsertEmailVerificationToken({
       user_id: userProfile.id,
       token: verificationToken,
       expires_at: verificationExpiresAt

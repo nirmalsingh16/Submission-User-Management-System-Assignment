@@ -15,7 +15,8 @@ EmailVerificationTokens.init(
 
     user_id: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      unique: true
     },
 
     token: {
@@ -40,10 +41,10 @@ EmailVerificationTokens.init(
 
 /**
  * Associations
- * One user can have many email verification tokens (over time),
- * but every token belongs to exactly one user.
+ * One user can have only one active email verification token,
+ * and every token belongs to exactly one user.
  */
-Users.hasMany(EmailVerificationTokens, {
+Users.hasOne(EmailVerificationTokens, {
   foreignKey: 'user_id',
   onDelete: 'CASCADE'
 });
